@@ -34,10 +34,6 @@ def register_html():
             error.append("mismatchpass")
         if newuser=="jamal":
             error.append("jamal")
-        query = "SELECT * FROM accounts WHERE username=?"
-        result = curs.execute(query,[newuser])
-        if result.fetchone():
-            error.append("dupename")
         if len(error)>0:
             success = False
         else:
