@@ -1,7 +1,13 @@
 from flask import Flask,render_template,request
 import pymongo
+from pymongo import MongoClient
 
 app = Flask(__name__)
+
+client = MongoClient()
+db = client['itsudemo']
+accounts = db['accounts']
+
 
 
 @app.route("/")
@@ -31,14 +37,16 @@ def register_html():
         post = True
         
         if newpass!=newpass2:
-            error.append("mismatchpass")
+            error.append("mismatched password")
         if newuser=="jamal":
-            error.append("jamal")
+            error.append("you are jamal")
+        if accounts.find_one({"login":newuser}):
+            error.append("user with that name already exists")
         if len(error)>0:
             success = False
         else:
-            pass
-            
+            newAccount = {"login":newuser,"password":newpass}
+            accounts.insert(newAccount)
         return render_template("register.html",
                                errorlist=error,
                                success=success,
