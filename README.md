@@ -1,4 +1,4 @@
-Mongo-Project
-=============
+blahblahblog
+============
 
-Mini Project using mongo DB
+softdev blog project (Corrin, Terrance, Mark, Lawrence)
