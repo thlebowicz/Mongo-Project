@@ -4,12 +4,11 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 
-client = MongoClient('0.0.0.0',27017)
+client = MongoClient()
 db = client['itsudemo']
 acctdb = db['accounts']
 postdb = db['posts']
-
-
+diary = db['diary']
 
 @app.route("/")
 @app.route("/home",methods=['GET','POST'])
@@ -119,6 +118,14 @@ def post_html(title):
 @app.route("/settings")
 def settings_html():
     return render_template("settings.html")
+
+@app.route("/diary",methods=["GET","POST"])
+def diary_html():
+    if (request.method=="POST"):
+        content= request.form["content"]
+        newEntry = {"author":session["username"],"content":content}
+        diary.insert(newEntry)
+    return render_template("diary.html",postList=diary.find({"author":session["username"]}))
 
 ###
 
