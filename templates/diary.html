@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<form action="/diary" method="POST">
+  New Diary entry: <input type="text" name="content"><br>
+  <input type="submit" name="Write" value="Write"></form>
+<br><br>
+<b><i>Your entries so far:</b></i><br>
+{% for post in postList %}
+{{post["content"]}}<br>
+{% endfor %}
+</body>
+</html>
