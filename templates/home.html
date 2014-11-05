@@ -19,11 +19,12 @@
       <li><a href="/register">Register</a></li>
       {% endif %}
       <li><a href="/posts">Posts</a></li>
-      <li><a href="/todo">To Do</a></li>
       {% if sess['username'] %}
       <li><a href="/diary">{{sess['username']}}'s Diary</a></li>
+      <li><a href="/settings">Settings</a></li>
       {% endif %}
     </ul>
   </div>
+  <a href="/todo">To Do</a>
 </body> 
 </html>

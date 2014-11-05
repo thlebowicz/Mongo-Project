@@ -26,6 +26,8 @@ def todo_html():
 
 @app.route("/login", methods=["GET","POST"])
 def login_html():
+    if("username" in session):
+        return redirect("/")
     error = []
     success = True
     post = False
@@ -40,7 +42,7 @@ def login_html():
             error.append("no user with that name")
         else:
             if acct["password"]!=logpass:
-                error.append("wrong username password")
+                error.append("wrong username or password")
         if len(error)>0:
             success = False
         else:
@@ -137,12 +139,39 @@ def post_html(title):
                            sess=session,
                            op=postdb.find_one({"title":title}))
 
-@app.route("/settings")
+@app.route("/settings",methods=['GET','POST'])
 def settings_html():
-    return render_template("settings.html")
+    if("username" not in session):
+        return redirect("/")
+    errors = []
+    post = False
+    success = True
+    if request.method=="POST":
+        post = True
+        oldpass = request.form["oldpass"]
+        newpass = request.form["newpass"]
+        passcfm = request.form["passcfm"]
+        curacct = acctdb.find_one({"login":session["username"]})
+        curpass = curacct["password"]
+        if oldpass!=curpass:
+            errors.append("incorrect password")
+        if newpass!=passcfm:
+            errors.append("new passwords don't match")
+        if len(errors)>0:
+            success = False
+        else:
+            curacct["password"] = newpass
+            acctdb.save(curacct)
+    return render_template("settings.html",
+                           errorlist=errors,
+                           post=post,
+                           success=success,
+                           sess=session)
 
 @app.route("/diary",methods=["GET","POST"])
 def diary_html():
+    if("username" not in session):
+        return redirect("/")
     if (request.method=="POST"):
         content= request.form["content"]
         newEntry = {"author":session["username"],"content":content}
