@@ -8,6 +8,7 @@ client = MongoClient()
 db = client['itsudemo']
 acctdb = db['accounts']
 postdb = db['posts']
+replydb = db['replies']
 diary = db['diary']
 
 @app.route("/")
@@ -113,7 +114,28 @@ def posts_html():
 
 @app.route("/post/<title>",methods=['GET','POST'])
 def post_html(title):
-    return render_template("post.html")
+    errors = []
+    post = False
+    success = True
+    if request.method=="POST":
+        post = True
+        newbody = request.form["body"]
+        newid = replydb.find({"title":title}).count()+1
+        if len(newbody)==0:
+            errors.append("blank reply")
+        if len(errors)>0:
+            success = False
+        else:
+            newreply = {"title":title,"author":session["username"],"body":newbody,"id":newid}
+            replydb.insert(newreply)
+    replies = replydb.find({"title":title})
+    return render_template("post.html",
+                           errorlist=errors,
+                           post=post,
+                           success=success,
+                           replies=sorted(replies,key=lambda k:k["id"] if "id" in k else 0),
+                           sess=session,
+                           op=postdb.find_one({"title":title}))
 
 @app.route("/settings")
 def settings_html():

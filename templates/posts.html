@@ -33,8 +33,6 @@
   {% for post in posts %}
   <h2><a href="post/{{post['title']}}">{{post['title']}}</a> - {% if post['author'] %}{{post['author']}}{% else %}Anonymous{% endif %}</h2>
   {{post['body']}}
-  <br>
-  <br>
   {% endfor %}
 </body> 
 </html>
