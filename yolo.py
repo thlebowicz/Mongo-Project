@@ -1,12 +1,13 @@
-from flask import Flask,render_template,request
-import pymongo
+from flask import Flask,render_template,request,session,redirect,url_for
 from pymongo import MongoClient
+
 
 app = Flask(__name__)
 
-client = MongoClient()
+client = MongoClient('0.0.0.0',27017)
 db = client['itsudemo']
 accounts = db['accounts']
+sessions = db['sessions']
 
 
 
@@ -15,7 +16,8 @@ accounts = db['accounts']
 def home_html():
     if request.method=="POST":
         pass
-    return render_template("home.html")
+    return render_template("home.html",
+                           sess=session)
 
 
 @app.route("/todo")
@@ -24,7 +26,35 @@ def todo_html():
 
 @app.route("/login", methods=["GET","POST"])
 def login_html():
-    return render_template("login.html")
+    error = []
+    success = True
+    post = False
+    if(request.method=="POST"):
+        post = True
+        loguser = request.form["username"]
+        logpass = request.form["password"]
+        if loguser=="jamal":
+            error.append("go away jamal")
+        acct = accounts.find_one({"login":loguser})
+        if not acct:
+            error.append("no user with that name")
+        else:
+            if acct["password"]!=logpass:
+                error.append("wrong username password")
+        if len(error)>0:
+            success = False
+        else:
+            session["username"] = loguser
+    return render_template("login.html",
+                           errorlist=error, 
+                           success=success,
+                           post=post,
+                           sess=session)
+
+@app.route("/logout")
+def logout_html():
+    session.pop('username',None)
+    return redirect('/')
 
 @app.route("/register", methods=["GET","POST"])
 def register_html():
@@ -54,6 +84,8 @@ def register_html():
     else:
         return render_template("register.html")
 
+##
+
 @app.route("/settings")
 def main_html():
     return render_template("main.html")
@@ -66,4 +98,5 @@ def settings_html():
 
 if __name__ == "__main__":
     app.debug = True
+    app.secret_key = "insane"
     app.run()

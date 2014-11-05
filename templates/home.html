@@ -10,7 +10,13 @@
   <div class="pure-menu pure-menu-open">
     <a class="pure-menu-heading">Menu</a>
     <ul>
+      {% if sess['username'] %}
+      <li><a>Currently logged in as: {{sess['username']}}</a></li>
+      <li><a href="/logout">Log Out</a></li>
+      {% else %}
+      <li><a>Not logged in.</a></li>
       <li><a href="/login">Log In</a></li>
+      {% endif %}
       <li><a href="/register">Register</a></li>
       <li><a href="/todo">To Do</a></li>
     </ul>
